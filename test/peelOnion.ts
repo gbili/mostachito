@@ -25,6 +25,9 @@ describe(`peelOnion`, function() {
     it('should access nested.child as data["nested"]["child"]', function() {
       expect(peelOnionUsingDotRef(mockData, 'nested.child')).to.be.equal(mockData['nested']['child' as unknown as number]); // bug in our typings string should be allowed
     });
+    it('should access posts.1.attributes.title as data["posts"][1]["attributes"]["title"]', function() {
+      expect(peelOnionUsingDotRef(mockData, 'posts.1.attributes.title')).to.be.equal(mockData["posts"][1]["attributes" as unknown as number]["title" as unknown as number]); // bug in our typings string should be allowed
+    });
     it('should throw when trying to access non existing first level data', function() {
       const badRef = 'nonExisting.data';
       expect(() => peelOnionUsingDotRef(mockData, badRef)).to.throw(`Missing ref ${badRef}`);
