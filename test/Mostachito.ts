@@ -105,36 +105,6 @@ describe(`Mostachito`, function() {
     });
   });
 
-  describe(`getNestedPath(dotNotation)`, function() {
-    it('should return a an array', function() {
-      expect(te.getNestedPath('this.is.an')).to.be.an('array');
-    });
-    it('should return an array with one more elements than dots in the string', function() {
-      expect(te.getNestedPath('this.is.an').length).to.be.equal(3);
-    });
-    it('should return ["this", "is", "an"]', function() {
-      expect(te.getNestedPath('this.is.an')).to.be.eql(["this", "is", "an"]);
-    });
-  });
-
-  describe(`getReferencedValue(data, ref)`, function() {
-    it('should access nested.child as data["nested"]["child"]', function() {
-      expect(te.getReferencedValue(mockData, 'nested.child')).to.be.equal(mockData['nested']['child']);
-    });
-    it('should throw when trying to access non existing first level data', function() {
-      const badRef = 'nonExisting.data';
-      expect(() => te.getReferencedValue(mockData, badRef)).to.throw('Template references a data which is missing in the view, ref: ' + badRef);
-    });
-    it('should return missingRefCallbacks return on missing ref when constructed with missingRefCallback', function() {
-      const badRef = 'nonExisting.data';
-      expect(teWithCallback.getReferencedValue(mockData, badRef)).to.be.equal(badRef);
-    });
-    it('should return missingRefCallbacks return on missing ref when constructed with missingRefCallback on second level bad ref', function() {
-      const badRef = 'nested.nonExisting';
-      expect(teWithCallback.getReferencedValue(mockData, badRef)).to.be.equal(badRef);
-    });
-  });
-
   describe(`replaceRef(template, data, ref)`, function() {
     it('should replace all such references', function() {
       expect(te.replaceRef(mockTemplate, mockData, 'nested.child'))
