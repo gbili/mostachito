@@ -56,21 +56,22 @@ class Mostachito {
   replaceArray(viewTemplate, viewData) {
     let r = new RegExp('{{(\\w+(?:\\.\\w+)*) as (\\w+)(.+)\\1}}', 'sg');
     let match = r.exec(viewTemplate);
-    if (match) {
-      let tpl = match[0];
-      let outerRef = match[1];
-      let subDatas = this.getReferencedValue(viewData, outerRef)
-      let innerRef = match[2];
-      let subTpl = match[3];
-      let subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
-      let hydratedViewPart = subDatas.map((function(subData) {
-        return this.replace(subTplWithoutInnerRefPrefix, subData);
-      }).bind(this)).join('');
-      viewTemplate = viewTemplate.replace(
-        new RegExp(tpl, 'g'),
-        hydratedViewPart
-      );
+    if (!match) {
+      return viewTemplate;
     }
+    let tpl = match[0];
+    let outerRef = match[1];
+    let subDatas = this.getReferencedValue(viewData, outerRef)
+    let innerRef = match[2];
+    let subTpl = match[3];
+    let subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
+    let hydratedViewPart = subDatas.map((function(subData) {
+      return this.replace(subTplWithoutInnerRefPrefix, subData);
+    }).bind(this)).join('');
+    viewTemplate = viewTemplate.replace(
+      new RegExp(tpl, 'g'),
+      hydratedViewPart
+    );
     return viewTemplate;
   }
 

@@ -18,9 +18,9 @@
     "semantic-release": "semantic-release"
   },
   "config": {
-      "ghooks": {
-          "pre-commit": "npm run test && npm run coverage:generate && npm run coverage:check"
-      }
+    "ghooks": {
+      "pre-commit": "npm run test && npm run coverage:generate && npm run coverage:check"
+    }
   },
   "repository": {
     "type": "git",
