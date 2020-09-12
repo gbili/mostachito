@@ -50,7 +50,7 @@ class Mostachito {
     let subTpl = match[3];
     let subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
     let hydratedViewPart = subDatas.map((subData: ViewData) => {
-      return this.replace(subTplWithoutInnerRefPrefix, subData);
+      return this.replace(subTplWithoutInnerRefPrefix, {...subData, ...viewData });
     }).join('');
     viewTemplate = viewTemplate.replace(
       new RegExp(tpl, 'g'),

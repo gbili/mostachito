@@ -11,6 +11,7 @@ describe(`Mostachito`, function() {
     'post.attributes.title',
     'post.attributes.nonExisting',
     'post.body',
+    'blogUrlPath',
   ];
 
   let parts = refs[6].split('.');
@@ -38,7 +39,7 @@ describe(`Mostachito`, function() {
         <h1>{{ ${refs[0]} }}</h1>
         <ul>
           {{${arrayRefs[0]} as post
-          <li><a href="/{{ ${refs[4]} }}">{{ ${refs[5]} }}</a><p>{{ ${refs[6]} }}</p><p>{{ ${refs[7]} }}</p></li>
+          <li><a href="{{ ${refs[8]} }}/{{ ${refs[4]} }}">{{ ${refs[5]} }}</a><p>{{ ${refs[6]} }}</p><p>{{ ${refs[7]} }}</p></li>
           ${arrayRefs[0]}}}
         </ul>
       </body>
@@ -49,6 +50,7 @@ describe(`Mostachito`, function() {
     siteTitle: 'Guillermo.at',
     title: 'Home',
     nested: { child: 'this is nested' },
+    blogUrlPath: '/blog',
     posts: [
       {
         attributes: { title: 'My BlogPost', slug: 'my-blog-post' },
@@ -81,9 +83,36 @@ describe(`Mostachito`, function() {
         <h1>{{ ${refs[0]} }}</h1>
         <ul>
           
-          <li><a href="/${mockData.posts[0].attributes.slug}">${mockData.posts[0].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[0].body}</p></li>
+          <li><a href="${mockData.blogUrlPath}/${mockData.posts[0].attributes.slug}">${mockData.posts[0].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[0].body}</p></li>
           
-          <li><a href="/${mockData.posts[1].attributes.slug}">${mockData.posts[1].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[1].body}</p></li>
+          <li><a href="${mockData.blogUrlPath}/${mockData.posts[1].attributes.slug}">${mockData.posts[1].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[1].body}</p></li>
+          
+        </ul>
+      </body>
+    </html>
+    `;
+
+  const mockWholeReplaced = `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <title>${mockData.siteTitle}</title>
+        <meta name="description" content="Simplest Blog in Nodejs">
+        <meta name="author" content="Guillermo Pages">
+        <meta name="nested-child" content="${mockData.nested.child}">
+        <link rel="stylesheet" href="css/styles.css?v=1.0">
+        <meta name="nested-child" content="${refs[2]}">
+        <meta name="nested-child" content="${refs[3]}">
+      </head>
+
+      <body>
+        <h1>${mockData.siteTitle}</h1>
+        <ul>
+          
+          <li><a href="${mockData.blogUrlPath}/${mockData.posts[0].attributes.slug}">${mockData.posts[0].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[0].body}</p></li>
+          
+          <li><a href="${mockData.blogUrlPath}/${mockData.posts[1].attributes.slug}">${mockData.posts[1].attributes.title}</a><p>${ref6WithoutPrefix}</p><p>${mockData.posts[1].body}</p></li>
           
         </ul>
       </body>
@@ -101,7 +130,7 @@ describe(`Mostachito`, function() {
       expect(te.getRefList(mockTemplate).length).to.be.equal(refs.length);
     });
     it('should return a list of all unique simple references in the template', function() {
-      expect(te.getRefList(mockTemplate)).to.be.eql(refs);
+      expect(te.getRefList(mockTemplate).sort()).to.be.eql(refs.sort());
     });
   });
 
@@ -118,6 +147,12 @@ describe(`Mostachito`, function() {
     });
     it('should replace all non missing refs with proper data and missing with ones callback output', function() {
       expect(teWithCallback.replaceArray(mockTemplate, mockData)).to.be.equal(mockArrayReplaced);
+    });
+  });
+
+  describe(`hydrate(template, data)`, function() {
+    it('should replace all non missing refs with proper data, even global within nested, and missing with ones callback output', function() {
+      expect(teWithCallback.hydrate(mockTemplate, mockData)).to.be.equal(mockWholeReplaced);
     });
   });
 });
