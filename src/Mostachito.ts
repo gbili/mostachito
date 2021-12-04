@@ -30,33 +30,33 @@ class Mostachito {
   }
 
   replace(viewTemplate: string, viewData: ViewData) {
-    const references = this.getRefList(viewTemplate);
-    for (let ref of references) {
-      viewTemplate = this.replaceRef(viewTemplate, viewData, ref)
-    }
-    return viewTemplate;
+    return this.getRefList(viewTemplate)
+      .reduce((p, ref) => this.replaceRef(p, viewData, ref), viewTemplate);
   }
 
   replaceArray(viewTemplate: string, viewData: ViewData) {
-    let r = new RegExp('{{(\\w+(?:\\.\\w+)*) as (\\w+)(.+)\\1}}', 'sg');
-    let match = r.exec(viewTemplate);
+    const r = new RegExp('{{(\\w+(?:\\.\\w+)*) as (\\w+)(.+)\\1}}', 'sg');
+    const match = r.exec(viewTemplate);
     if (!match) {
       return viewTemplate;
     }
-    let tpl = match[0];
-    let outerRef = match[1];
-    let subDatas = peelOnionUsingDotRef(viewData, outerRef, this.missingRefCallback)
-    let innerRef = match[2];
-    let subTpl = match[3];
-    let subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
-    let hydratedViewPart = subDatas.map((subData: ViewData) => {
+    const tpl = match[0];
+    const outerRef = match[1];
+    const subDatas = peelOnionUsingDotRef(viewData, outerRef, this.missingRefCallback)
+    if (Array.isArray(subDatas) && subDatas.length <= 0) {
+      return viewTemplate.replace(new RegExp(tpl, 'g'), '');
+    }
+    const innerRef = match[2];
+    const subTpl = match[3];
+    const subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
+    const hydratedViewPart = subDatas.map((subData: ViewData) => {
       return this.replace(subTplWithoutInnerRefPrefix, {...subData, ...viewData });
     }).join('');
-    viewTemplate = viewTemplate.replace(
+
+    return viewTemplate.replace(
       new RegExp(tpl, 'g'),
       hydratedViewPart
     );
-    return viewTemplate;
   }
 
 }

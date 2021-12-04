@@ -65,6 +65,43 @@ describe(`Mostachito`, function() {
     ],
   };
 
+  const mockDataEmptyPostsArray = {
+    siteTitle: 'Guillermo.at',
+    title: 'Home',
+    nested: { child: 'this is nested' },
+    blogUrlPath: '/blog',
+    posts: [],
+  };
+
+  const mockDataMissingPostsAttribute = {
+    siteTitle: 'Guillermo.at',
+    title: 'Home',
+    nested: { child: 'this is nested' },
+    blogUrlPath: '/blog',
+  };
+
+  const mockArrayRemoved = `
+    <!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <title>{{ ${refs[0]} }}</title>
+        <meta name="description" content="Simplest Blog in Nodejs">
+        <meta name="author" content="Guillermo Pages">
+        <meta name="nested-child" content="{{ ${refs[1]} }}">
+        <link rel="stylesheet" href="css/styles.css?v=1.0">
+        <meta name="nested-child" content="{{ ${refs[2]} }}">
+        <meta name="nested-child" content="{{ ${refs[3]} }}">
+      </head>
+
+      <body>
+        <h1>{{ ${refs[0]} }}</h1>
+        <ul>
+          
+        </ul>
+      </body>
+    </html>
+    `;
   const mockArrayReplaced = `
     <!doctype html>
     <html lang="en">
@@ -144,6 +181,12 @@ describe(`Mostachito`, function() {
   describe(`replaceArray(template, data)`, function() {
     it('should throw if missing data ref using ref without element prefix', function() {
       expect(() => te.replaceArray(mockTemplate, mockData)).to.throw('Template references a data which is missing in the view, ref: ' + ref6WithoutPrefix);
+    });
+    it('should throw if missing outer ref', function() {
+      expect(() => te.replaceArray(mockTemplate, mockDataMissingPostsAttribute)).to.throw(`Template references a data which is missing in the view, ref: ${arrayRefs[0]}`);
+    });
+    it('should remove the array block when array ref is an empty array', function() {
+      expect(te.replaceArray(mockTemplate, mockDataEmptyPostsArray)).to.be.equal(mockArrayRemoved);
     });
     it('should replace all non missing refs with proper data and missing with ones callback output', function() {
       expect(teWithCallback.replaceArray(mockTemplate, mockData)).to.be.equal(mockArrayReplaced);
