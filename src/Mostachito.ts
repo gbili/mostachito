@@ -35,27 +35,28 @@ class Mostachito {
   }
 
   replaceArray(viewTemplate: string, viewData: ViewData) {
-    const r = new RegExp('{{(\\w+(?:\\.\\w+)*) as (\\w+)(.+)\\1}}', 'sg');
-    const match = r.exec(viewTemplate);
+    const elsBlockTemplateRegex = new RegExp('{{(\\w+(?:\\.\\w+)*) as (\\w+)(.+)\\1}}', 'sg');
+    const match = elsBlockTemplateRegex.exec(viewTemplate);
     if (!match) {
       return viewTemplate;
     }
-    const tpl = match[0];
-    const outerRef = match[1];
-    const subDatas = peelOnionUsingDotRef(viewData, outerRef, this.missingRefCallback)
-    if (Array.isArray(subDatas) && subDatas.length <= 0) {
-      return viewTemplate.replace(new RegExp(tpl, 'g'), '');
+    const elsBlockTemplate = match[0];
+    const elsListRefName = match[1];
+    const elsData = peelOnionUsingDotRef(viewData, elsListRefName, this.missingRefCallback)
+    if (Array.isArray(elsData) && elsData.length <= 0) {
+      return viewTemplate.replace(new RegExp(elsBlockTemplate, 'g'), '');
     }
-    const innerRef = match[2];
-    const subTpl = match[3];
-    const subTplWithoutInnerRefPrefix = subTpl.replace(new RegExp(`{{ ${innerRef}\\.`, 'g'), '{{ ');
-    const hydratedViewPart = subDatas.map((subData: ViewData) => {
-      return this.replace(subTplWithoutInnerRefPrefix, {...subData, ...viewData });
-    }).join('');
+    const elRefName = match[2];
+    const elTemplate = match[3];
+    const unprefixedElTemplate = elTemplate.replace(new RegExp(`{{ ${elRefName}\\.`, 'g'), '{{ ');
+    const elsHydratedViewPart = elsData.map((elData: ViewData) => {
+        return this.replace(unprefixedElTemplate, { ...elData, ...viewData });
+      })
+      .join('');
 
     return viewTemplate.replace(
-      new RegExp(tpl, 'g'),
-      hydratedViewPart
+      new RegExp(elsBlockTemplate, 'g'),
+      elsHydratedViewPart
     );
   }
 
