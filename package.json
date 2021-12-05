@@ -1,6 +1,6 @@
 {
   "name": "mostachito",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Minimalistic Templating Engine for Nodejs",
   "main": "build/src/Mostachito.js",
   "scripts": {
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@types/chai": "latest",
     "@types/mocha": "latest",
+    "@types/node": "^16.11.11",
     "chai": "latest",
     "mocha": "latest",
     "nodemon": "latest"

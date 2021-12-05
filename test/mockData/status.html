@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{{ siteTitle }}</title>
+    <meta name="description" content="Server status check">
+    <meta name="author" content="Guillermo Pages">
+    <meta name="company" content="Meow LLC">
+    <link rel="stylesheet" href="css/styles.css?v=1.0">
+    <meta http-equiv="refresh" content="{{ secondsBeforeAutoRefresh }}" >
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+  </head>
+
+  <body>
+    <div id="main-container">
+      <header>
+        <h1>{{ siteTitle }}</h1>
+      </header>
+      <div id="content">
+        <p class="status-{{ statusInfo.statusName }}"></p>
+        <p>{{ statusInfo.friendlyFullSentence }}</p>
+        <table>
+          <thead>
+            <tr>
+              <th colspan="2">Stats</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Current status</td>
+              <td class="status-{{ statusInfo.statusName }}">{{ statusInfo.statusName }}</td>
+            </tr>
+            <tr>
+              <td>Last check date</td>
+              <td>{{ statusInfo.dateLastChecked }}</td>
+            </tr>
+            <tr>
+              <td>Checking every</td>
+              <td>{{ statusInfo.checkIntervalInMinutes }} min.</td>
+            </tr>
+            <tr>
+              <td>Times checked</td>
+              <td>{{ statusInfo.checksSpreeCount }}</td>
+            </tr>
+            <tr>
+              <td>Bot alive for</td>
+              <td>{{ statusInfo.aliveForYMDHMS }}</td>
+            </tr>
+            {{statusInfo.errors as error
+              <tr>
+                <td>Error message :</td>
+                <td>{{ error.message }}</td>
+              </tr>
+            statusInfo.errors}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

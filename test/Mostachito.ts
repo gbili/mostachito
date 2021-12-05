@@ -1,5 +1,8 @@
 import { expect } from 'chai';
 import Mostachito from '../src/Mostachito';
+import fs from 'fs';
+import path from 'path';
+import { hydrationOutputGen, iterableMatchedTemplate, missingPrefixClosingTagIterableMatchedTemplate, mockViewDataWithEmptyErros } from './mockData/expectedHydrationOutput';
 
 describe(`Mostachito`, function() {
   const refs = [
@@ -196,6 +199,54 @@ describe(`Mostachito`, function() {
   describe(`hydrate(template, data)`, function() {
     it('should replace all non missing refs with proper data, even global within nested, and missing with ones callback output', function() {
       expect(teWithCallback.hydrate(mockTemplate, mockData)).to.be.equal(mockWholeReplaced);
+    });
+  });
+
+  describe(`hydrate(template, data)`, function() {
+    const templatePath = path.normalize(path.join(__dirname, `../../test/mockData/status.html`));
+    const loadViewTemplate = function (filepath: string): Promise<{ viewTemplate: string; }> {
+      return new Promise<{ viewTemplate: string; }>(function(resolve, reject) {
+        fs.readFile(filepath, 'utf-8', function(err, viewTemplate) {
+          if (err) return reject(err);
+          resolve({ viewTemplate });
+        });
+      });
+    }
+    it('should have a "viewTemplate" property', async function () {
+      const { viewTemplate } = await loadViewTemplate(templatePath);
+      expect(teWithCallback.hydrate(viewTemplate, mockViewDataWithEmptyErros)).to.be.equal(hydrationOutputGen(mockViewDataWithEmptyErros));
+    });
+  });
+
+  describe(`matchIterableTemplate(template)`, function() {
+    const templatePath = path.normalize(path.join(__dirname, `../../test/mockData/status.html`));
+    const loadViewTemplate = function (filepath: string): Promise<{ viewTemplate: string; }> {
+      return new Promise<{ viewTemplate: string; }>(function(resolve, reject) {
+        fs.readFile(filepath, 'utf-8', function(err, viewTemplate) {
+          if (err) return reject(err);
+          resolve({ viewTemplate });
+        });
+      });
+    }
+    it('should match the block on its own', async function () {
+      expect(teWithCallback.matchIterableTemplate(iterableMatchedTemplate)).to.haveOwnProperty("elsBlockTemplate");
+    });
+    it('should match something', async function () {
+      const { viewTemplate } = await loadViewTemplate(templatePath);
+      expect(teWithCallback.matchIterableTemplate(viewTemplate)).to.not.equal(null);
+    });
+
+  });
+
+  describe(`debugTemplate(template)`, function() {
+    it('should return null when the passed template is ok', async function () {
+      expect(teWithCallback.debugTemplate(iterableMatchedTemplate)).to.equal(null);
+    });
+    it('should return an error when the block matches if we ommit the closing tag name', async function () {
+      expect(teWithCallback.debugTemplate(missingPrefixClosingTagIterableMatchedTemplate)).to.be.an.instanceOf(Error);
+    });
+    it('should return an error with message, when the block matches if we ommit the closing tag name', async function () {
+      expect(teWithCallback.debugTemplate(missingPrefixClosingTagIterableMatchedTemplate)?.message).to.be.equal('You seem to be using an iterable template, but missing the proper closing bracket name: are you missing thie <something> part as in <something>.mylist}}?');
     });
   });
 });
