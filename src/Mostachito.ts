@@ -83,7 +83,8 @@ class Mostachito {
     }
     const unprefixedElTemplate = elTemplate.replace(new RegExp(`{{ ${elRefName}\\.`, 'g'), '{{ ');
     const elsHydratedViewPart = elsData.map((elData: ViewData) => {
-        return this.replace(unprefixedElTemplate, { ...elData, ...viewData });
+      const elMakeUnenumerablePropsEnumerable = (typeof elData === 'object' && Object.keys(elData).length <= 0) ? Object.getOwnPropertyNames(elData).reduce((p, c) => ({ ...p, [c]: elData[c]}), {}) : elData;
+        return this.replace(unprefixedElTemplate, { ...elMakeUnenumerablePropsEnumerable, ...viewData });
       })
       .join('');
 

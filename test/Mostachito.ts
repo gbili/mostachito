@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import Mostachito from '../src/Mostachito';
 import fs from 'fs';
 import path from 'path';
-import { hydrationOutputGen, iterableMatchedTemplate, missingPrefixClosingTagIterableMatchedTemplate, mockViewDataWithEmptyErros } from './mockData/expectedHydrationOutput';
+import { hydrationOutputGen, iterableMatchedTemplate, missingPrefixClosingTagIterableMatchedTemplate, mockViewDataWithEmptyErros, mockViewDataWithErros } from './mockData/expectedHydrationOutput';
 
 describe(`Mostachito`, function() {
   const refs = [
@@ -215,6 +215,10 @@ describe(`Mostachito`, function() {
     it('should have a "viewTemplate" property', async function () {
       const { viewTemplate } = await loadViewTemplate(templatePath);
       expect(teWithCallback.hydrate(viewTemplate, mockViewDataWithEmptyErros)).to.be.equal(hydrationOutputGen(mockViewDataWithEmptyErros));
+    });
+    it('should be able to retrieve a nested object prop', async function () {
+      const { viewTemplate } = await loadViewTemplate(templatePath);
+      expect(teWithCallback.hydrate(viewTemplate, mockViewDataWithErros)).to.be.equal(hydrationOutputGen(mockViewDataWithErros));
     });
   });
 
