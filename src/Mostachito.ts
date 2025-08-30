@@ -96,4 +96,9 @@ class Mostachito {
 
 }
 
+// Export instance type for ESM/CJS compatibility
+export type MostachitoInstance = Mostachito;
+
+// Export both as named and default for better compatibility
+export { Mostachito };
 export default Mostachito;
